@@ -45,11 +45,20 @@ npm run install:all
 Copia los archivos de plantilla y configura las variables:
 
 ```bash
+# Client Gateway
+cp apps/client_gateway/.env.template apps/client_gateway/.env
+
+# Auth Service
+cp apps/auth_service/.env.template apps/auth_service/.env
+
 # User Service
 cp apps/user_service/.env.template apps/user_service/.env
 
-# Client Gateway
-cp apps/client_gateway/.env.template apps/client_gateway/.env
+# Project Service
+cp apps/project_service/.env.template apps/project_service/.env
+
+# Task Service
+cp apps/task_service/.env.template apps/task_service/.env
 ```
 
 ### Ejecución de los Servicios
