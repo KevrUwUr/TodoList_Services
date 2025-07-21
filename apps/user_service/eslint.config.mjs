@@ -6,7 +6,16 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: [
+      'eslint.config.mjs',
+      'src/generated/**',
+      'dist/**',
+      'node_modules/**',
+      '**/*.d.ts',
+      '**/*.js',
+      'prisma/migrations/**',
+      '*.tsbuildinfo'
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

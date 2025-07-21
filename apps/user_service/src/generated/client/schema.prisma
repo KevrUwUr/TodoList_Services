@@ -1,0 +1,59 @@
+// User Service Database Schema
+// Microservice: User Management
+// Database: user_service_db
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Core user profile data (sync with Auth Service)
+model UserProfile {
+  user_id    Int      @id @default(autoincrement()) // Same as Auth Service user_id
+  username   String
+  email      String   @unique
+  first_name String?
+  last_name  String?
+  team_id    Int? // Reference to Team
+  role_id    Int? // Reference to Role
+  status     Int      @default(1)
+  password   String // Hashed password
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  // Relations
+  team Team?      @relation(fields: [team_id], references: [team_id], onDelete: SetNull)
+  role RoleCache? @relation(fields: [role_id], references: [role_id], onDelete: SetNull)
+
+  @@map("user_profiles")
+}
+
+// Team management
+model Team {
+  team_id     Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?  @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  // Relations
+  users UserProfile[]
+
+  @@map("teams")
+}
+
+// Role definitions (can be cached from Auth Service)
+model RoleCache {
+  role_id Int    @id @default(autoincrement())
+  name    String
+
+  // Relations
+  users UserProfile[]
+
+  @@map("role_cache")
+}
