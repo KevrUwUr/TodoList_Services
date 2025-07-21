@@ -1,0 +1,28 @@
+// Notification Service Database Schema
+// Microservice: Notification Management
+// Database: notification_service_db
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Notifications for users
+model Notification {
+  notification_id Int      @id @default(autoincrement())
+  user_id         Int      // Reference to User Service
+  title           String
+  message         String   @db.Text
+  type            String   @default("info") // info, success, warning, error
+  is_read         Boolean  @default(false)
+  related_id      Int?     // Reference to related entity (task, project, etc.)
+  related_type    String?  // Type of related entity (task, project, etc.)
+  created_at      DateTime @default(now())
+  read_at         DateTime?
+
+  @@map("notifications")
+}

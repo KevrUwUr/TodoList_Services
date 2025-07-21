@@ -1,0 +1,24 @@
+// Comment Service Database Schema
+// Microservice: Comment Management
+// Database: comment_service_db
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Comments for tasks
+model Comment {
+  comment_id  Int      @id @default(autoincrement())
+  task_id     Int      // Reference to Task Service
+  user_id     Int      // Reference to User Service
+  content     String   @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("comments")
+}
