@@ -1,0 +1,64 @@
+// Task Service Database Schema
+// Microservice: Task Management
+// Database: task_service_db
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Task management
+model Task {
+  task_id     Int       @id @default(autoincrement())
+  project_id  Int // Reference to Project Service
+  title       String
+  description String?   @db.Text
+  status      String    @default("pending") // pending, in_progress, completed, cancelled
+  priority    String    @default("medium") // low, medium, high, urgent
+  due_date    DateTime?
+  created_by  Int // Reference to User Service
+  assigned_to Int? // Reference to User Service
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt
+
+  // Relations
+  assignments TaskAssignment[]
+  history     TaskHistory[]
+
+  @@map("tasks")
+}
+
+// Task assignments (many-to-many relationship)
+model TaskAssignment {
+  task_id     Int
+  user_id     Int // Reference to User Service
+  assigned_at DateTime @default(now())
+  assigned_by Int // Reference to User Service
+
+  // Relations
+  task Task @relation(fields: [task_id], references: [task_id], onDelete: Cascade)
+
+  @@id([task_id, user_id])
+  @@map("task_assignments")
+}
+
+// Task history for tracking changes
+model TaskHistory {
+  history_id Int      @id @default(autoincrement())
+  task_id    Int
+  action     String // created, updated, assigned, completed, etc.
+  old_value  String?  @db.Text
+  new_value  String?  @db.Text
+  changed_by Int // Reference to User Service
+  created_at DateTime @default(now())
+
+  // Relations
+  task Task @relation(fields: [task_id], references: [task_id], onDelete: Cascade)
+
+  @@map("task_history")
+}
