@@ -1,0 +1,36 @@
+// Project Service Database Schema
+// Microservice: Project Management
+// Database: project_service_db
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  project_id  Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  end_date    DateTime
+  status      Int   @default(1)
+  team_id     Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+  
+  members ProjectMember[]
+}
+
+model ProjectMember {
+  project_id Int
+  user_id    Int      // Sin FK - referencia a User Service
+  role       String   @default("member") // project_admin, member
+  joined_at  DateTime @default(now())
+  
+  project Project @relation(fields: [project_id], references: [project_id], onDelete: Cascade)
+  
+  @@id([project_id, user_id])
+}
